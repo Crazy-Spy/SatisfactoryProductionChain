@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satisfactory Production Chain</title>
+    <meta name="description" content="Satisfactory automation dependency planner: discover what buildings, parts, and raw resources you need to build to automate any item.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-badge">FICSIT INC.</div>
+                <h1>Satisfactory Production Chain</h1>
+                <p class="tagline">What do you need to build to AUTOMATE any item?</p>
+            </div>
+            <div class="header-stats" id="headerStats">
+                <span class="stat-pill"><strong id="statItemsCount">...</strong> Items</span>
+                <span class="stat-pill"><strong id="statRecipesCount">...</strong> Recipes</span>
+                <span class="stat-pill"><strong id="statBuildingsCount">...</strong> Buildings</span>
+                <span class="stat-pill"><strong id="statResourcesCount">...</strong> Raw Ores</span>
+            </div>
+
+            <!-- Save Game Integration Controls -->
+            <div class="header-save-controls" id="headerSaveControls">
+                <input type="file" id="saveFileInput" accept=".sav" style="display: none;">
+                
+                <button id="uploadSaveBtn" class="btn-upload-save" title="Upload your Satisfactory .sav file from %LOCALAPPDATA%\FactoryGame\Saved\SaveGames\">
+                    <span class="btn-icon">📁</span>
+                    <span>Load Save (.sav)</span>
+                </button>
+
+                <div id="saveLoadedBadge" class="save-loaded-badge" style="display: none;">
+                    <div class="save-badge-icon">🎮</div>
+                    <div class="save-badge-info">
+                        <span class="save-badge-session" id="saveSessionName">Session</span>
+                        <span class="save-badge-meta" id="saveMetaDetails">-- &bull; -- Alts</span>
+                    </div>
+                    <button id="unloadSaveBtn" class="btn-unload-save" title="Unload save (return to sandbox mode)">&times;</button>
+                </div>
+
+                <button id="saveHelpBtn" class="btn-save-help" title="Save file locations & Alternate Recipes guide" aria-label="Save Game Help">
+                    <span class="btn-help-icon">ℹ️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- Search & Selection Section -->
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        id="itemSearchInput" 
+                        class="search-input" 
+                        placeholder="Search item to automate... (e.g. Computer, Crystal Oscillator, Heavy Modular Frame)"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <div class="search-input-actions">
+                        <button id="clearSearchBtn" class="clear-btn" title="Clear search" type="button" style="display: none;">✕</button>
+                        <button id="dropdownToggleBtn" class="dropdown-toggle-btn" title="Open items dropdown" type="button">▼</button>
+                    </div>
+                    <div id="searchResultsDropdown" class="search-dropdown" style="display: none;"></div>
+                </div>
+
+                <!-- Quick Selection Chips -->
+                <div class="quick-chips">
+                    <span class="chips-label">Quick select:</span>
+                    <button class="chip" data-item="Computer">
+                        <img class="chip-icon" src="images/items/Desc_Computer_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Computer</span>
+                    </button>
+                    <button class="chip" data-item="Crystal Oscillator">
+                        <img class="chip-icon" src="images/items/Desc_CrystalOscillator_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Crystal Oscillator</span>
+                    </button>
+                    <button class="chip" data-item="Heavy Modular Frame">
+                        <img class="chip-icon" src="images/items/Desc_ModularFrameHeavy_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Heavy Modular Frame</span>
+                    </button>
+                    <button class="chip" data-item="Motor">
+                        <img class="chip-icon" src="images/items/Desc_Motor_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Motor</span>
+                    </button>
+                    <button class="chip" data-item="Circuit Board">
+                        <img class="chip-icon" src="images/items/Desc_CircuitBoard_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Circuit Board</span>
+                    </button>
+                    <button class="chip" data-item="Rotor">
+                        <img class="chip-icon" src="images/items/Desc_Rotor_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Rotor</span>
+                    </button>
+                    <button class="chip" data-item="Modular Frame">
+                        <img class="chip-icon" src="images/items/Desc_ModularFrame_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Modular Frame</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loadingIndicator" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading FICSIT industrial schematics...</p>
+        </div>
+
+        <!-- Empty / Welcome State -->
+        <section id="welcomeState" class="welcome-state" style="display: none;">
+            <div class="welcome-card">
+                <div class="welcome-icon">🏭</div>
+                <h2>Select an item to reveal its complete automation chain</h2>
+                <p>This tool answers the fundamental factory planning question: <strong>"What do I need to build to automate this item?"</strong></p>
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🌳</span>
+                        <div>
+                            <strong>Full Recursive Hierarchy</strong>
+                            <p>Traces every component and intermediate part all the way back to raw ores and extraction nodes.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🏗️</span>
+                        <div>
+                            <strong>Responsible Machinery</strong>
+                            <p>Identifies exact machines needed at each manufacturing step (Smelter, Constructor, Assembler, Manufacturer, etc.).</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <div>
+                            <strong>Alternate Recipes Visibility</strong>
+                            <p>Preserves all alternate recipes and alerts you where alternative paths exist.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Results Workspace -->
+        <div id="resultsWorkspace" class="results-workspace" style="display: none;">
+            <!-- Active Item Banner (Target for Automation) -->
+            <div class="active-item-banner">
+                <div class="active-item-info">
+                    <img id="activeItemIcon" class="active-item-icon" src="" alt="" style="display: none;">
+                    <div class="active-item-text">
+                        <span class="active-item-subtitle">TARGET FOR AUTOMATION</span>
+                        <h2 id="activeItemTitle" class="active-item-title">Computer</h2>
+                        <p id="activeItemDescription" class="active-item-desc"></p>
+                    </div>
+                </div>
+                <div class="active-item-meta">
+                    <span id="totalNodesBadge" class="badge badge-info">13 Chain Steps</span>
+                </div>
+            </div>
+
+            <!-- Plain-Text Graphic Interpretation / Automation Summary -->
+            <div class="automation-narrative-card" id="automationNarrativeCard">
+                <div class="narrative-header">
+                    <div class="narrative-title-group">
+                        <span class="narrative-icon">📋</span>
+                        <h4>AUTOMATION BLUEPRINT &bull; SUMMARY</h4>
+                    </div>
+                    <span class="narrative-tagline">Plain-text interpretation of factory requirements</span>
+                </div>
+                <div class="narrative-body" id="automationNarrativeBody">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+
+            <!-- Unified Visualization Section -->
+            <div class="visualization-card">
+                <!-- Unified View Mode Tabs & Contextual Controls Header -->
+                <div class="visualization-header">
+                    <div class="view-mode-tabs">
+                        <button id="tabGraphViewBtn" class="tab-btn active">
+                            <span class="tab-icon">🕸️</span> Factory Graph
+                        </button>
+                        <button id="tabTreeViewBtn" class="tab-btn">
+                            <span class="tab-icon">🌳</span> Hierarchy Tree
+                        </button>
+                    </div>
+
+                    <!-- Contextual Controls for Tree Mode (Hidden by default) -->
+                    <div class="tree-controls" id="treeControlsGroup" style="display: none;">
+                        <div class="flow-toggle-group">
+                            <span class="flow-label">Flow:</span>
+                            <div class="button-group">
+                                <button id="flowTopDownBtn" class="btn btn-toggle active" title="Top-Down: Final product breaking down to raw ores">
+                                    ⬇ Target → Ore
+                                </button>
+                                <button id="flowBottomUpBtn" class="btn btn-toggle" title="Bottom-Up: Raw ores building up to final product">
+                                    ⬆ Ore → Target
+                                </button>
+                            </div>
+                        </div>
+                        <div class="expand-toggle-group">
+                            <button id="expandAllBtn" class="btn btn-secondary">Expand All</button>
+                            <button id="collapseAllBtn" class="btn btn-secondary">Collapse</button>
+                        </div>
+                    </div>
+
+                    <!-- Contextual Controls for Graph Mode (Default Active) -->
+                    <div class="graph-toolbar" id="graphToolbarGroup">
+                        <div class="graph-rate-control">
+                            <label for="graphTargetRateInput">Target Rate:</label>
+                            <div class="rate-input-wrapper">
+                                <input type="number" id="graphTargetRateInput" value="1" min="0.01" step="any">
+                                <span id="graphRateUnit" class="rate-unit">parts / min</span>
+                            </div>
+                        </div>
+                        <div class="graph-stats-summary" id="graphStatsSummary">
+                            <span class="stat-pill"><strong id="graphTotalMachines">0</strong> Machines</span>
+                            <span class="stat-pill"><strong id="graphTotalSteps">0</strong> Steps</span>
+                        </div>
+                        <div class="graph-zoom-controls">
+                            <button id="graphAltsToggleBtn" class="btn btn-secondary" title="Configure Alternate Recipes">
+                                🔄 Recipes <span id="graphAltsCountBadge" class="alts-badge">0</span>
+                            </button>
+                            <button id="graphZoomInBtn" class="btn btn-secondary btn-icon" title="Zoom In">➕</button>
+                            <button id="graphZoomOutBtn" class="btn btn-secondary btn-icon" title="Zoom Out">➖</button>
+                            <button id="graphFitBtn" class="btn btn-secondary" title="Fit to Screen">⛶ Fit</button>
+                            <button id="graphResetBtn" class="btn btn-secondary" title="Reset View">↺ Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Two-Column Layout: Tree on Left, Summaries on Right (Hidden by default) -->
+                <div class="workspace-grid" id="treeWorkspaceGrid" style="display: none;">
+                    <!-- Visual Production Tree -->
+                    <section class="tree-section">
+                        <div class="tree-container" id="treeContainer">
+                            <!-- Tree nodes rendered here -->
+                        </div>
+                    </section>
+
+                    <!-- Sidebar Summaries -->
+                    <aside class="sidebar-section">
+                        <!-- Raw Resources Summary Card -->
+                        <div class="summary-card raw-summary-card">
+                            <div class="card-header">
+                                <span class="card-icon">⛏️</span>
+                                <h4>RAW RESOURCES</h4>
+                            </div>
+                            <p class="card-subtitle">Terminal raw materials required for this chain:</p>
+                            <ul id="rawResourcesList" class="summary-list raw-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+
+                        <!-- Buildings Required Summary Card -->
+                        <div class="summary-card buildings-summary-card">
+                            <div class="card-header">
+                                <span class="card-icon">🏭</span>
+                                <h4>BUILDINGS REQUIRED</h4>
+                            </div>
+                            <p class="card-subtitle">Distinct industrial machines participating in the chain:</p>
+                            <ul id="buildingsList" class="summary-list buildings-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+
+                        <!-- Alternate Recipes Notification Card -->
+                        <div class="summary-card alternates-summary-card" id="alternatesSummaryCard">
+                            <div class="card-header">
+                                <span class="card-icon">🔄</span>
+                                <h4>ALTERNATE RECIPES</h4>
+                            </div>
+                            <div id="alternatesCardContent">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+                <!-- 2. Factory Graph Flowchart Section (DAG View - Default Active) -->
+                <section class="graph-section" id="factoryGraphSection">
+                    <div class="graph-canvas-container" id="graphCanvasContainer">
+                        <!-- SVG graph rendered dynamically -->
+                    </div>
+
+                    <!-- Slide-in Drawer for Alternate Recipes in Graph Mode -->
+                    <div class="graph-alts-drawer" id="graphAltsDrawer" style="display: none;">
+                        <div class="drawer-header">
+                            <div class="drawer-title">
+                                <span class="card-icon">🔄</span>
+                                <h4>ALTERNATE RECIPES</h4>
+                            </div>
+                            <button id="closeAltsDrawerBtn" class="drawer-close" title="Close recipes panel">&times;</button>
+                        </div>
+                        <div id="graphAltsDrawerContent" class="drawer-content">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="graph-hint">
+                        <span>💡 <strong>Navigation Tip:</strong> Click & drag anywhere to pan. Scroll with your mouse wheel to zoom in or out.</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-creator-badge">
+                <span class="creator-sparkle">⭐</span>
+                <span>Created by <strong class="creator-name">CrazySpy</strong></span>
+                <span class="creator-divider">&bull;</span>
+                <span class="creator-credits-highlight">🏆 Proudly featured in the official <strong>Satisfactory</strong> game credits!</span>
+                <span class="creator-sparkle">⭐</span>
+            </div>
+            <p class="footer-tagline"><strong>Satisfactory Production Chain</strong> &bull; FICSIT Inc. Approved Factory Automation Planner &bull; Satisfactory 1.2 Ready</p>
+            <p class="footer-note">100% static, client-side &amp; privacy-focused application. Game assets &copy; Coffee Stain Studios.</p>
+        </div>
+    </footer>
+
+    <!-- Save Game & Recipe Guide Modal -->
+    <div id="saveHelpModal" class="save-help-modal-backdrop" style="display: none;">
+        <div class="save-help-modal" role="dialog" aria-modal="true" aria-labelledby="saveHelpModalTitle">
+            <div class="save-help-header">
+                <div class="save-help-title-group">
+                    <span class="save-help-icon">💡</span>
+                    <h3 id="saveHelpModalTitle">Satisfactory Save &amp; Recipes Guide</h3>
+                </div>
+                <button id="closeSaveHelpBtn" class="save-help-close" title="Close guide (Esc)">&times;</button>
+            </div>
+
+            <div class="save-help-body">
+                <!-- Section 1: Where to find saves -->
+                <div class="guide-card">
+                    <div class="guide-card-header">
+                        <span class="guide-badge">📂 LOCATION</span>
+                        <h4>Where to find your Save Games (.sav)</h4>
+                    </div>
+                    <p>Satisfactory stores world saves locally on your Windows computer. To open the folder quickly:</p>
+                    
+                    <div class="shortcut-box">
+                        <div class="shortcut-step">
+                            <span class="step-num">1</span>
+                            <span>Press <kbd>Win</kbd> + <kbd>R</kbd> on your keyboard to open <strong>Run</strong></span>
+                        </div>
+                        <div class="shortcut-step">
+                            <span class="step-num">2</span>
+                            <span>Paste the path below and press <kbd>Enter</kbd>:</span>
+                        </div>
+                        <div class="copy-path-row">
+                            <input type="text" id="savePathInput" readonly value="%LOCALAPPDATA%\FactoryGame\Saved\SaveGames\" class="save-path-input">
+                            <button id="copySavePathBtn" class="btn-copy-path" title="Copy path to clipboard">📋 Copy Path</button>
+                        </div>
+                    </div>
+
+                    <div class="platform-paths">
+                        <div class="platform-item">
+                            <span class="platform-tag steam">STEAM</span>
+                            <code>%LOCALAPPDATA%\FactoryGame\Saved\SaveGames\&lt;SteamID64&gt;\</code>
+                        </div>
+                        <div class="platform-item">
+                            <span class="platform-tag epic">EPIC GAMES</span>
+                            <code>%LOCALAPPDATA%\FactoryGame\Saved\SaveGames\&lt;EpicAccountID&gt;\</code>
+                        </div>
+                    </div>
+                    <p class="guide-note">💡 <em>Select your latest <code>.sav</code> file (e.g. <code>MyWorld.sav</code>). You can also simply drag and drop the file directly onto this webpage!</em></p>
+                </div>
+
+                <!-- Section 2: How Alternate Recipes work -->
+                <div class="guide-card">
+                    <div class="guide-card-header">
+                        <span class="guide-badge highlight">⚡ SYNC</span>
+                        <h4>Alternate Recipes &amp; M.A.M. Research</h4>
+                    </div>
+                    <p>In Satisfactory, Alternate Recipes are unlocked by scanning <strong>Hard Drives</strong> in the <strong>M.A.M.</strong> (Molecular Analysis Machine). By loading your save file:</p>
+                    <ul class="guide-list">
+                        <li>
+                            <span class="list-bullet">⭐</span>
+                            <div>
+                                <strong>Unlocked Recipes (<code>[ALT]</code>):</strong> Recipes you have already unlocked in your save are immediately highlighted and available for planning.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="list-bullet">🔒</span>
+                            <div>
+                                <strong>Locked Recipes (<code>[LOCKED]</code>):</strong> Recipes you have not unlocked in that world are marked as locked.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="list-bullet">👁️</span>
+                            <div>
+                                <strong>"Hide recipes locked in save" Toggle:</strong> Easily filter the dropdowns to only display alternate recipes you can actually build right now!
+                            </div>
+                        </li>
+                        <li>
+                            <span class="list-bullet">🛡️</span>
+                            <div>
+                                <strong>100% Client-Side &amp; Private:</strong> The save parsing runs strictly in your web browser. No data or files are ever sent to any external server.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="save-help-footer">
+                <button id="dismissSaveHelpBtn" class="btn-dismiss-help">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drag and Drop Overlay for .sav files -->
+    <div id="dragDropOverlay" class="drag-drop-overlay" style="display: none;">
+        <div class="drag-drop-modal">
+            <div class="drag-drop-icon">🚀</div>
+            <h3>Drop your Satisfactory Save (.sav) here</h3>
+            <p>We'll read your unlocked recipes and synchronize your production chains instantly!</p>
+            <span class="drag-drop-hint">Local &amp; 100% private in your browser</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/save-parser.js"></script>
+    <script src="js/production-tree.js"></script>
+    <script src="js/factory-graph.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

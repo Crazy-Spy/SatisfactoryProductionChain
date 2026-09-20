@@ -1,0 +1,162 @@
+﻿[
+    {
+        "id":  "Build_MinerMk1_C",
+        "name":  "Miner Mk.1",
+        "description":  "Extracts solid resources from the resource node it is built on. \r\nDefault extraction rate is 60 resources per minute. \r\nExtraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.",
+        "gameClass":  "Build_MinerMk1_C",
+        "type":  "Extractor",
+        "powerConsumption":  5,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_MinerMk1_C.png"
+    },
+    {
+        "id":  "Build_OilPump_C",
+        "name":  "Oil Extractor",
+        "description":  "Extracts Crude Oil when built on an oil node. Extraction rates vary based on node purity.\r\n\r\nDefault Extraction Rate: 120 m³ of oil per minute.\r\nHead Lift: 10 m\r\n(Allows fluids to be transported 10 meters upwards.)",
+        "gameClass":  "Build_OilPump_C",
+        "type":  "Extractor",
+        "powerConsumption":  40,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_OilPump_C.png"
+    },
+    {
+        "id":  "Build_MinerMk2_C",
+        "name":  "Miner Mk.2",
+        "description":  "Extracts solid resources from the resource node it is built on. \r\nDefault extraction rate is 120 resources per minute. \r\nExtraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.",
+        "gameClass":  "Build_MinerMk2_C",
+        "type":  "Extractor",
+        "powerConsumption":  15,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_MinerMk2_C.png"
+    },
+    {
+        "id":  "Build_MinerMk3_C",
+        "name":  "Miner Mk.3",
+        "description":  "Extracts solid resources from the resource node it is built on. \r\nDefault extraction rate is 240 resources per minute. \r\nExtraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.",
+        "gameClass":  "Build_MinerMk3_C",
+        "type":  "Extractor",
+        "powerConsumption":  45,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_MinerMk3_C.png"
+    },
+    {
+        "id":  "Build_ConstructorMk1_C",
+        "name":  "Constructor",
+        "description":  "Crafts 1 part into another part.\r\n\r\nCan be automated by feeding component parts in via a Conveyor Belt connected to the input port. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.",
+        "gameClass":  "Build_ConstructorMk1_C",
+        "type":  "Manufacturer",
+        "powerConsumption":  4,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_ConstructorMk1_C.png"
+    },
+    {
+        "id":  "Build_SmelterMk1_C",
+        "name":  "Smelter",
+        "description":  "Smelts ore into ingots.\r\n\r\nCan be automated by feeding ore in via a Conveyor Belt connected to the input port. The resulting ingots can be automatically extracted by connecting a Conveyor Belt to the output port.",
+        "gameClass":  "Build_SmelterMk1_C",
+        "type":  "Smelter",
+        "powerConsumption":  4,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_SmelterMk1_C.png"
+    },
+    {
+        "id":  "Build_FoundryMk1_C",
+        "name":  "Foundry",
+        "description":  "Smelts 2 resources into alloy ingots.\r\n\r\nCan be automated by feeding ore in via Conveyor Belts connected to the input ports. The resulting ingots can be automatically extracted by connecting a Conveyor Belt to the output port.",
+        "gameClass":  "Build_FoundryMk1_C",
+        "type":  "Smelter",
+        "powerConsumption":  16,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_FoundryMk1_C.png"
+    },
+    {
+        "id":  "Build_OilRefinery_C",
+        "name":  "Refinery",
+        "description":  "Refines fluid and/or solid parts into other parts.\r\nHead Lift: 10 m\r\n(Allows fluids to be transported 10 meters upwards.)\r\n\r\nHas both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.",
+        "gameClass":  "Build_OilRefinery_C",
+        "type":  "Refinery",
+        "powerConsumption":  30,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_OilRefinery_C.png"
+    },
+    {
+        "id":  "Build_Packager_C",
+        "name":  "Packager",
+        "description":  "Packages and unpackages fluids.\r\nHead Lift: 10 m\r\n(Allows fluids to be transported 10 meters upwards.)\r\n\r\nHas both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.",
+        "gameClass":  "Build_Packager_C",
+        "type":  "Refinery",
+        "powerConsumption":  10,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_Packager_C.png"
+    },
+    {
+        "id":  "Build_ManufacturerMk1_C",
+        "name":  "Manufacturer",
+        "description":  "Crafts 3 or 4 parts into another part.\r\n\r\nCan be automated by feeding component parts in via Conveyor Belts connected to the input ports. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.",
+        "gameClass":  "Build_ManufacturerMk1_C",
+        "type":  "Manufacturer",
+        "powerConsumption":  55,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_ManufacturerMk1_C.png"
+    },
+    {
+        "id":  "Build_AssemblerMk1_C",
+        "name":  "Assembler",
+        "description":  "Crafts 2 parts into another part.\r\n\r\nCan be automated by feeding component parts in via Conveyor Belts connected to the input ports. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.",
+        "gameClass":  "Build_AssemblerMk1_C",
+        "type":  "Manufacturer",
+        "powerConsumption":  15,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_AssemblerMk1_C.png"
+    },
+    {
+        "id":  "Build_Blender_C",
+        "name":  "Blender",
+        "description":  "Blends fluids together or combines them with solid parts in a wide variety of processes.\r\nHead Lift: 10 m\r\n(Allows fluids to be transported 10 meters upwards.)\r\n\r\nHas both Conveyor Belt and Pipeline input and output ports.",
+        "gameClass":  "Build_Blender_C",
+        "type":  "Refinery",
+        "powerConsumption":  75,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_Blender_C.png"
+    },
+    {
+        "id":  "Build_WaterPump_C",
+        "name":  "Water Extractor",
+        "description":  "Extracts water from the body of water it is built on.\r\nNote: the water needs to be sufficiently deep, and rivers are generally not deep enough.\r\n\r\nDefault Extraction Rate: 120 m³ of water per minute.\r\nHead Lift: 10 m\r\n(Allows fluids to be transported 10 meters upwards.)",
+        "gameClass":  "Build_WaterPump_C",
+        "type":  "Extractor",
+        "powerConsumption":  20,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_WaterPump_C.png"
+    },
+    {
+        "id":  "Build_HadronCollider_C",
+        "name":  "Particle Accelerator",
+        "description":  "Uses electromagnetic fields to propel particles to very high speeds and energies. The specific design allows for a variety of processes, including matter generation and conversion.\r\n\r\nWarning: Power usage is extremely high and unstable, and varies per recipe.",
+        "gameClass":  "Build_HadronCollider_C",
+        "type":  "Advanced",
+        "powerConsumption":  0,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_HadronCollider_C.png"
+    },
+    {
+        "id":  "Build_Converter_C",
+        "name":  "Converter",
+        "description":  "The Converter harnesses Reanimated SAM to enable precise matter and energy transmutation.\r\n\r\nWarning: Power usage is very high and unstable.",
+        "gameClass":  "Build_Converter_C",
+        "type":  "Advanced",
+        "powerConsumption":  0,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_Converter_C.png"
+    },
+    {
+        "id":  "Build_QuantumEncoder_C",
+        "name":  "Quantum Encoder",
+        "description":  "The Quantum Encoder uses Excited Photonic Matter to produce the most complex of parts, controlling development up to the quantum level.\r\n\r\nWarning: Power usage is extremely high and unstable.",
+        "gameClass":  "Build_QuantumEncoder_C",
+        "type":  "Advanced",
+        "powerConsumption":  0,
+        "manufacturingSpeed":  1,
+        "icon":  "images/buildings/Build_QuantumEncoder_C.png"
+    }
+]

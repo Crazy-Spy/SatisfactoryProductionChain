@@ -1,0 +1,145 @@
+﻿[
+    {
+        "id":  "Desc_LiquidOil_C",
+        "name":  "Crude Oil",
+        "description":  "Refined into all kinds of Oil-based resources, like Fuel and Plastic.",
+        "gameClass":  "Desc_LiquidOil_C",
+        "form":  "RF_LIQUID",
+        "isFluid":  true,
+        "energyValue":  0.32,
+        "sinkPoints":  30,
+        "icon":  "images/items/Desc_LiquidOil_C.png"
+    },
+    {
+        "id":  "Desc_Water_C",
+        "name":  "Water",
+        "description":  "It\u0027s water.",
+        "gameClass":  "Desc_Water_C",
+        "form":  "RF_LIQUID",
+        "isFluid":  true,
+        "energyValue":  0,
+        "sinkPoints":  5,
+        "icon":  "images/items/Desc_Water_C.png"
+    },
+    {
+        "id":  "Desc_NitrogenGas_C",
+        "name":  "Nitrogen Gas",
+        "description":  "Has a variety of uses, including metallurgy, cooling, and Nitric Acid production. On MASSAGE-2 (AB)b, it can be extracted from underground gas wells.",
+        "gameClass":  "Desc_NitrogenGas_C",
+        "form":  "RF_GAS",
+        "isFluid":  true,
+        "energyValue":  0,
+        "sinkPoints":  10,
+        "icon":  "images/items/Desc_NitrogenGas_C.png"
+    },
+    {
+        "id":  "Desc_OreIron_C",
+        "name":  "Iron Ore",
+        "description":  "Used for crafting.\r\nThe most essential basic resource.",
+        "gameClass":  "Desc_OreIron_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  1,
+        "icon":  "images/items/Desc_OreIron_C.png"
+    },
+    {
+        "id":  "Desc_Coal_C",
+        "name":  "Coal",
+        "description":  "Mainly used as fuel for vehicles \u0026 Coal-Powered Generators, or in Steel production.",
+        "gameClass":  "Desc_Coal_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  300,
+        "sinkPoints":  3,
+        "icon":  "images/items/Desc_Coal_C.png"
+    },
+    {
+        "id":  "Desc_OreCopper_C",
+        "name":  "Copper Ore",
+        "description":  "Used for crafting.\r\nA basic resource primarily used for electricity.",
+        "gameClass":  "Desc_OreCopper_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  3,
+        "icon":  "images/items/Desc_OreCopper_C.png"
+    },
+    {
+        "id":  "Desc_Stone_C",
+        "name":  "Limestone",
+        "description":  "Used for crafting.\r\nA basic resource primarily used for stable Foundations.",
+        "gameClass":  "Desc_Stone_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  2,
+        "icon":  "images/items/Desc_Stone_C.png"
+    },
+    {
+        "id":  "Desc_RawQuartz_C",
+        "name":  "Raw Quartz",
+        "description":  "Can be processed into Quartz Crystals and Silica, which both offer a variety of applications.",
+        "gameClass":  "Desc_RawQuartz_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  15,
+        "icon":  "images/items/Desc_RawQuartz_C.png"
+    },
+    {
+        "id":  "Desc_SAM_C",
+        "name":  "SAM",
+        "description":  "Strange Alien Matter, commonly referred to as SAM, doesn\u0027t seem to follow the known laws of physics. It whispers of new possibilities.",
+        "gameClass":  "Desc_SAM_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  20,
+        "icon":  "images/items/Desc_SAM_C.png"
+    },
+    {
+        "id":  "Desc_OreBauxite_C",
+        "name":  "Bauxite",
+        "description":  "Used to produce Alumina, which can be further refined into the Aluminum Scrap required to produce Aluminum Ingots.",
+        "gameClass":  "Desc_OreBauxite_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  8,
+        "icon":  "images/items/Desc_OreBauxite_C.png"
+    },
+    {
+        "id":  "Desc_OreGold_C",
+        "name":  "Caterium Ore",
+        "description":  "Smelted into Caterium Ingots, which are primarily used for advanced electronics.",
+        "gameClass":  "Desc_OreGold_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  7,
+        "icon":  "images/items/Desc_OreGold_C.png"
+    },
+    {
+        "id":  "Desc_Sulfur_C",
+        "name":  "Sulfur",
+        "description":  "Primarily used to produce Black Powder.",
+        "gameClass":  "Desc_Sulfur_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  11,
+        "icon":  "images/items/Desc_Sulfur_C.png"
+    },
+    {
+        "id":  "Desc_OreUranium_C",
+        "name":  "Uranium",
+        "description":  "A radioactive element. \r\nUsed to produce Encased Uranium Cells for Uranium Fuel Rods.\r\n\r\nCaution: Moderately Radioactive.",
+        "gameClass":  "Desc_OreUranium_C",
+        "form":  "RF_SOLID",
+        "isFluid":  false,
+        "energyValue":  0,
+        "sinkPoints":  35,
+        "icon":  "images/items/Desc_OreUranium_C.png"
+    }
+]

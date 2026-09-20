@@ -1,0 +1,19 @@
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+
+# Game save files
+*.sav
+SaveGames/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node (if used later)
+node_modules/
+package-lock.json
+
