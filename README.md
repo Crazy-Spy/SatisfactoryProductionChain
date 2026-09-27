@@ -1,56 +1,66 @@
 # Satisfactory Production Chain
 
-A simple production chain calculator for **Satisfactory**.
+A visual factory planner for [Satisfactory](https://www.satisfactorygame.com/) (1.0+).
 
-Select an item and see:
+Most factory calculators out there are great for late-game min-maxing and massive spreadsheets, but when I'm actually playing, I usually just want quick answers to two simple questions:
 
-* What **raw resources** you need
-* What **parts** are required
-* What **machines** you need
-* The complete **production chain**
+1. **"What do I need to build to automate this part from scratch?"**
+2. **"I have an overflow of X parts/min on a belt, what can I turn them into right now?"**
 
-Set your target production rate and the calculator does the math for you.
+I built this tool to answer both without any logins, tracking, or bloated setups. It's a single static web app that runs 100% in your browser.
 
-## Features
+---
 
-* Visual production chain
-* Raw resources → final product
-* Machine requirements
-* Production rate calculation
-* Standard and alternate recipes
-* Search for items
-* Save game support (`.sav`)
-* Detects unlocked alternate recipes
-* Top-down and bottom-up views
-* 100% client-side
-* No account, tracking or backend
+## What It Does
 
-## How to Use
+### 1. Full Production Chain (Target Item → Raw Resources)
+Pick any item (e.g. Heavy Modular Frame, Computer, Battery) and set your target rate (e.g. `2/min`):
+* **Visual Factory Graph:** See how items flow between machines. You can drag nodes around, pan, and zoom to map out your factory layout.
+* **Hierarchy Tree View:** If you prefer a structured breakdown, toggle to the tree view (supports both top-down and bottom-up flows).
+* **Machine Counts:** Shows the exact number of Smelters, Constructors, Assemblers, Refineries, etc. needed.
+* **Alternate Recipes:** Click any step to swap in an alternate recipe. The graph and machine counts recalculate instantly.
+* **By-Product Handling & Closed-Loop Recycling:** Automatically tracks secondary outputs (Water, Silica, Heavy Oil Residue, Polymer Resin). If a by-product can be looped back into the line (like Water from Aluminum Scrap into Alumina Solution), you can toggle **Closed-Loop: ON** to offset raw extraction and see the feedback loop on the diagram. It also reminds you that fluids can't go straight into the AWESOME Sink without a Packager.
 
-Open the app, select an item, set the production rate, and see what you need to build.
+### 2. Next Step Explorer ("What can I make with this?")
+For when you're expanding an existing factory or have extra output from an existing manifold:
+* Enter an item and your current supply (e.g. `225 Wire/min`).
+* See all immediate crafting recipes that consume that item, what else they require, and how much they produce.
+* **Overclocking & Compaction:** Includes a clock speed slider (1% to 250%) and quick presets (e.g. turning 4.5 constructors into 3 overclocked constructors) along with exact Power Shard counts.
 
-That's it.
+### 3. Load Your Save File (`.sav`)
+Drop your Satisfactory save file directly onto the page:
+* Scans which alternate recipes you've actually unlocked via MAM Hard Drives.
+* Option to hide locked recipes so you don't plan around alternates you don't have yet.
+* Shows playtime and unlocked alternates count.
+* **Privacy:** Your save file is parsed entirely inside your browser using the native Web Streams API. Nothing is uploaded anywhere.
 
-## Privacy
+---
 
-Everything runs in your browser.
+## Running It Locally
 
-Your save game and data are **never uploaded** to a server.
+This is just a static website (HTML, CSS, vanilla JS) with local JSON files for game data. 
 
-## About
+Because modern browsers block `fetch()` requests on raw `file:///` URLs due to CORS, you just need a quick local HTTP server:
 
-Created by **CrazySpy**.
+**Using VS Code:**
+Right-click `index.html` and choose **Open with Live Server**.
 
-Made for pioneers who want to answer one simple question:
+**Using Python:**
+```bash
+python -m http.server 8080
+```
+Then open `http://localhost:8080` in your browser.
 
-> **"What do I need to build this?"**
+**Using Node / npx:**
+```bash
+npx serve .
+```
 
-Built for **Satisfactory 1.0+**.
+---
 
-[Satisfactory](https://www.satisfactorygame.com/) is developed and published by Coffee Stain Studios.
+## Credits & Disclaimer
 
-This project is not affiliated with Coffee Stain Studios.
-
-## License
-
-MIT License.
+* Built by **CrazySpy** (also credited in the official Satisfactory game credits!).
+* Game data and assets belong to **Coffee Stain Studios**.
+* This is an unofficial fan project and is not affiliated with or endorsed by Coffee Stain Studios.
+* Open source under the [MIT License](LICENSE).
