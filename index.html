@@ -48,8 +48,26 @@
     </header>
 
     <main class="app-main">
-        <!-- Search & Selection Section -->
-        <section class="search-section">
+        <!-- Primary Mode Navigation: Automate Product (Full Chain) vs Next Step Explorer (Single Step) -->
+        <nav class="main-mode-nav" aria-label="Planner Modes">
+            <button id="modeChainBtn" class="mode-nav-btn active" type="button">
+                <span class="mode-nav-icon">🎯</span>
+                <div class="mode-nav-info">
+                    <span class="mode-nav-title">Automate Product</span>
+                    <span class="mode-nav-desc">Complete Blueprint &amp; Factory DAG Chain</span>
+                </div>
+            </button>
+            <button id="modeNextStepBtn" class="mode-nav-btn" type="button">
+                <span class="mode-nav-icon">⚡</span>
+                <div class="mode-nav-info">
+                    <span class="mode-nav-title">Next Step Explorer</span>
+                    <span class="mode-nav-desc">What can I make with my surplus items?</span>
+                </div>
+            </button>
+        </nav>
+
+        <!-- Search & Selection Section (Automate Product Mode) -->
+        <section id="chainSearchSection" class="search-section">
             <div class="search-container">
                 <div class="search-input-wrapper">
                     <span class="search-icon">🔍</span>
@@ -185,6 +203,14 @@
                         </button>
                     </div>
 
+                    <!-- Closed-Loop Recycling Toggle (Shown when byproducts are produced) -->
+                    <div class="recycle-toggle-wrapper" id="recycleToggleWrapper" style="display: none;">
+                        <button id="recycleClosedLoopBtn" class="btn btn-recycle-toggle active" type="button" title="Toggle Closed-Loop By-product Recycling">
+                            <span class="recycle-btn-icon">♻️</span>
+                            <span class="recycle-btn-label">Closed-Loop: <strong id="recycleBtnState">ON</strong></span>
+                        </button>
+                    </div>
+
                     <!-- Contextual Controls for Tree Mode (Hidden by default) -->
                     <div class="tree-controls" id="treeControlsGroup" style="display: none;">
                         <div class="flow-toggle-group">
@@ -264,6 +290,18 @@
                             </ul>
                         </div>
 
+                        <!-- By-products Produced Card -->
+                        <div class="summary-card byproducts-summary-card" id="byproductsSummaryCard" style="display: none;">
+                            <div class="card-header">
+                                <span class="card-icon">♻️</span>
+                                <h4>BY-PRODUCTS PRODUCED</h4>
+                            </div>
+                            <p class="card-subtitle">Secondary outputs generated during production (can offset inputs or require secondary handling):</p>
+                            <ul id="byproductsList" class="summary-list byproducts-list">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+
                         <!-- Alternate Recipes Notification Card -->
                         <div class="summary-card alternates-summary-card" id="alternatesSummaryCard">
                             <div class="card-header">
@@ -303,6 +341,115 @@
                 </section>
             </div>
         </div>
+
+        <!-- Next Step Explorer Workspace (Single-Step Downstream Planner) -->
+        <section id="nextStepWorkspace" class="next-step-workspace" style="display: none;">
+            <div class="next-step-header-banner">
+                <div class="next-step-banner-info">
+                    <span class="next-step-badge">⚡ DOWNSTREAM EXPLORER</span>
+                    <h2 class="next-step-heading">Next Step Explorer: What can I build with this?</h2>
+                    <p class="next-step-subheading">
+                        Enter any item you have in surplus and your available supply rate to discover all immediate downstream crafting paths, additional ingredients required, and overclocking options.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Next Step Inputs Card -->
+            <div class="next-step-controls-card">
+                <div class="next-step-inputs-row">
+                    <div class="next-step-field item-field">
+                        <label for="nextStepItemInput" class="next-step-field-label">Available Item / Surplus:</label>
+                        <div class="search-input-wrapper next-step-search-wrapper">
+                            <span class="search-icon">📦</span>
+                            <input 
+                                type="text" 
+                                id="nextStepItemInput" 
+                                class="search-input" 
+                                placeholder="Choose item... (e.g. Wire, Iron Ingot, Plastic)"
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                            <div class="search-input-actions">
+                                <button id="clearNextStepSearchBtn" class="clear-btn" title="Clear input" type="button" style="display: none;">✕</button>
+                                <button id="dropdownNextStepToggleBtn" class="dropdown-toggle-btn" title="Open items list" type="button">▼</button>
+                            </div>
+                            <div id="nextStepResultsDropdown" class="search-dropdown" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div class="next-step-field rate-field">
+                        <label for="nextStepRateInput" class="next-step-field-label">Available Supply Rate:</label>
+                        <div class="rate-input-box">
+                            <input 
+                                type="number" 
+                                id="nextStepRateInput" 
+                                class="next-step-rate-input" 
+                                value="225" 
+                                min="0.001" 
+                                step="any"
+                            >
+                            <span id="nextStepRateUnitBadge" class="rate-unit-badge">units/min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Selection Chips for raw & intermediate staples -->
+                <div class="next-step-quick-chips">
+                    <span class="chips-label">Popular staples:</span>
+                    <button class="chip next-step-chip active" data-item="Wire" type="button">
+                        <img class="chip-icon" src="images/items/Desc_Wire_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Wire</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Iron Ingot" type="button">
+                        <img class="chip-icon" src="images/items/Desc_IronIngot_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Iron Ingot</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Copper Ingot" type="button">
+                        <img class="chip-icon" src="images/items/Desc_CopperIngot_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Copper Ingot</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Steel Pipe" type="button">
+                        <img class="chip-icon" src="images/items/Desc_SteelPipe_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Steel Pipe</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Plastic" type="button">
+                        <img class="chip-icon" src="images/items/Desc_Plastic_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Plastic</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Concrete" type="button">
+                        <img class="chip-icon" src="images/items/Desc_Stone_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Concrete</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Quickwire" type="button">
+                        <img class="chip-icon" src="images/items/Desc_GoldIngot_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Quickwire</span>
+                    </button>
+                    <button class="chip next-step-chip" data-item="Crude Oil" type="button">
+                        <img class="chip-icon" src="images/items/Desc_LiquidOil_C.png" alt="" onerror="this.style.display='none'">
+                        <span>Crude Oil</span>
+                    </button>
+                </div>
+
+                <!-- Filters toolbar -->
+                <div class="next-step-filter-bar">
+                    <div class="filter-pills" id="nextStepFilterPills">
+                        <button class="filter-pill active" data-filter="all" type="button">All Options</button>
+                        <button class="filter-pill" data-filter="standard" type="button">Standard Recipes</button>
+                        <button class="filter-pill" data-filter="alternate" type="button">Alternate Recipes (ALTs)</button>
+                    </div>
+
+                    <label id="nextStepSaveFilterLabel" class="save-filter-toggle" style="display: none;">
+                        <input type="checkbox" id="nextStepHideLockedCheckbox">
+                        <span>Hide recipes locked in save</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Next Step Results Section -->
+            <div id="nextStepResultsContainer" class="next-step-results-container">
+                <!-- Injected dynamically by app.js -->
+            </div>
+        </section>
     </main>
 
     <footer class="app-footer">

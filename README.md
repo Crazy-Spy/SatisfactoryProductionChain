@@ -34,20 +34,41 @@ The primary view provides a visual, directed acyclic graph (DAG) of your factory
 * **Target Rate Scaling:** Adjust your desired production rate (e.g., `1`, `2.5`, or `10` parts/min) and watch machine requirements and flow rates adapt in real-time.
 * **Pan & Zoom Controls:** Effortlessly navigate large factory lines with Zoom In, Zoom Out, Auto-Fit, and Reset to original layout.
 
-### 📋 2. Automation Blueprint Summary (Plain-Text Interpretation)
+### ⚡ 2. Next Step Explorer ("What can I build with this?")
+A single-step forward planning mode designed for when you have surplus parts and want to know your immediate crafting options:
+* **Immediate Downstream Discovery:** Input any available item (e.g., `225 Wire/min`, `Iron Ingot`, `Steel Pipe`) to instantly see all direct crafting recipes.
+* **Exact Outputs & Co-Ingredients:** Displays output rates alongside any secondary co-ingredients needed to sustain the line (e.g., `+84.38 Steel Pipe/min` for Stators, or `✓ None (Self-contained)` for Cables).
+* **Interactive Overclocking & Compaction:** Drag a real-time slider from 1% to 250% or click smart integer presets (e.g., `3× @ 125%`, `2× @ 187.5%`, `4× @ 93.8%`) to eliminate fractional machines and shrink factory footprints.
+* **Power Shards Calculation:** Automatically computes the required Power Shards (0 to 3 per machine).
+* **Recipe Filters:** Filter by All Options, Standard Recipes, Alternate Recipes (ALTs), or hide recipes locked in your loaded savegame.
+
+### 📋 3. Automation Blueprint Summary (Plain-Text Interpretation)
 Located directly beneath the target banner, this card translates the entire factory graph into clean, human-readable English:
 * **Raw Resources:** Shows every natural raw resource needed with official icons.
 * **Intermediate Components:** Lists every synthesized part generated along the chain.
 * **Exact Machine Multipliers:** Calculates the exact number of machines needed for your target rate (e.g., `0.4× Manufacturer`, `1.6× Refinery`, `0.53× Assembler`).
 * **Active Recipe Disclosure:** Clearly states whether the chain is calculated `📋 utilizing standard recipes` or `⚡ utilizing custom alternate recipes`.
+* **By-products Output & Recycling:** Detects and flags secondary by-products (e.g., `+120 m³/min Water 🔄 Recyclable in line!`).
 
-### ⚡ 3. Full Alternate Recipes System
+### ♻️ 4. First-Class By-Products & Closed-Loop Recycling
+Complex chemical and refining processes often produce secondary outputs (e.g., *Water* from Aluminum Scrap and Batteries, *Heavy Oil Residue* from Plastic/Rubber, *Silica* from Alumina Solution, *Polymer Resin* from Fuel):
+* **`♻️ Closed-Loop: ON/OFF` Toggle:** Seamlessly toggle internal by-product recycling on or off with a single click. When active:
+  * **Automated Demand Offsetting:** Consumable by-products (e.g., Water from Aluminum Scrap, Silica from Alumina Solution) are automatically looped back into upstream input manifolds, reducing raw extraction demands (e.g., reducing Water Extractor requirements for Aluminum Ingot from 1.5 to 1.0 m³/min).
+  * **Topological Feedback Arcs:** The Factory Graph renders an emerald-green dashed conveyor/pipe loop arching overhead directly from the producing machine to the consuming machine's input port.
+  * **FICSIT Plumbing Advisory:** Provides actionable in-game engineering tips (e.g., using Variable Input Priority / VIP junctions or unpowered valves) so fluid loops do not deadlock and choke production.
+* **Accurate Secondary Handling Guidance:**
+  * **💧 Fluids (Water, Heavy Oil Residue, Sulfuric Acid):** Pipes cannot connect to the AWESOME Sink directly. The tool instructs you to package fluids into canisters via a Packager before sinking, or route them to secondary production lines (e.g., Wet Concrete, Fuel).
+  * **📦 Solids (Silica, Polymer Resin):** Belts can route solids directly into an AWESOME Sink or into secondary manufacturing.
+* **Dedicated By-products Sidebar Card:** Quantifies all gross, recycled, and surplus secondary output rates per minute with clear status indicators in the Hierarchy Tree view.
+* **Strict Primary Recipe Resolution:** Prioritizes recipes where an item is the true primary product, ensuring clean default paths (e.g., producing Sulfuric Acid in Refineries rather than proposing Encased Uranium Cells).
+
+### ⚡ 4. Full Alternate Recipes System
 Customize any step of your production chain with alternate recipes:
 * **Dynamic Factory Morphing:** Switching a recipe (e.g., standard *Concrete* to *Alternate: Wet Concrete*) instantly replaces Constructors with Refineries, adds Water as an extraction input, and recalculates conveyor flows.
 * **Visual Identifiers:** Machine nodes using alternate recipes feature a distinctive pulsating amber glow ring (`[ALT]`).
 * **1-Click Reset:** Easily revert any or all customizations back to standard recipes with the `↺ Restore Defaults` button.
 
-### 💾 4. Save Game Integration (`.sav`)
+### 💾 5. Save Game Integration (`.sav`)
 Load your actual Satisfactory savegame to automatically align the planner with your in-game world progress:
 * **100% Client-Side & Private:** Save files never leave your computer. The parser decompresses Unreal Engine chunks directly in your browser using the native `DecompressionStream` API.
 * **M.A.M. Hard Drive Scanning:** Automatically reads your researched recipes and tags them as unlocked (`⭐ [ALT]`) or unresearched (`🔒 [LOCKED]`).
@@ -55,13 +76,13 @@ Load your actual Satisfactory savegame to automatically align the planner with y
 * **World Metadata:** Displays your session name, playtime duration, and total unlocked alternates in the header.
 * **Convenient Drag & Drop:** Drop your `.sav` file anywhere onto the page. An interactive guide `(i)` provides Windows shortcuts and exact save paths for both Steam and Epic Games.
 
-### 🌳 5. Hierarchy Tree View
+### 🌳 6. Hierarchy Tree View
 A secondary structured view designed for in-depth hierarchical analysis:
 * **Top-Down Mode:** Traces dependencies from the final product down to raw natural resources.
 * **Bottom-Up Mode:** Inverts the flow, following raw ores forward as they are processed into higher-tier parts.
 * **Collapsible Branches:** Expand and collapse individual branches or use the global *Expand All / Collapse All* controls.
 
-### 🔍 6. Fast Search & Quick Select
+### 🔍 7. Fast Search & Quick Select
 * Instantly search through **all 203 items** in Satisfactory with live highlighting and official transparent 3D icons.
 * Quick-select chips for staple milestone items (*Computer*, *Crystal Oscillator*, *Heavy Modular Frame*, *Motor*, *Circuit Board*, *Rotor*, *Modular Frame*).
 * Full keyboard navigation (<kbd>↓</kbd>, <kbd>↑</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>).
