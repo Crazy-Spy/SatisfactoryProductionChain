@@ -82,8 +82,6 @@
         statRecipesCount: document.getElementById('statRecipesCount'),
         statBuildingsCount: document.getElementById('statBuildingsCount'),
         statResourcesCount: document.getElementById('statResourcesCount'),
-        pioneersOnlineCount: document.getElementById('pioneersOnlineCount'),
-        pioneersOnlineText: document.getElementById('pioneersOnlineText'),
         // Save Game Elements
         saveFileInput: document.getElementById('saveFileInput'),
         uploadSaveBtn: document.getElementById('uploadSaveBtn'),
@@ -2428,129 +2426,12 @@
         return state.recycleClosedLoop;
     };
 
-    /**
-     * Setup pioneer presence counter
-     * Tracks active tabs locally and simulates authentic live traffic on production/deployed environments.
-     * Exposes window.setPioneersOnlineCount() for easy backend integration (e.g. Firebase, WebSocket).
-     */
-    function setupPioneerPresence() {
-        const isLocal = window.location.hostname === 'localhost' ||
-                        window.location.hostname === '127.0.0.1' ||
-                        window.location.hostname === '';
-        const STORAGE_KEY = 'ficsit_pioneers_active_tabs';
-        const TAB_ID = 'pioneer_tab_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
-        const CHANNEL_NAME = 'ficsit_pioneers_presence_channel';
-
-        let externalCountOverride = null;
-        let presenceChannel = null;
-
-        function updateDisplay(count) {
-            const safeCount = Math.max(1, count);
-            if (elements.pioneersOnlineText) {
-                elements.pioneersOnlineText.innerHTML = `<strong id="pioneersOnlineCount">${safeCount}</strong> ${safeCount === 1 ? 'Pioneer' : 'Pioneers'} Online`;
-            } else if (elements.pioneersOnlineCount) {
-                elements.pioneersOnlineCount.textContent = safeCount;
-            }
-        }
-
-        function getActiveLocalTabs() {
-            try {
-                const now = Date.now();
-                const raw = localStorage.getItem(STORAGE_KEY);
-                let tabs = raw ? JSON.parse(raw) : {};
-                // Prune entries older than 8s
-                for (const id in tabs) {
-                    if (now - tabs[id] > 8000) {
-                        delete tabs[id];
-                    }
-                }
-                tabs[TAB_ID] = now;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs));
-                return Object.keys(tabs).length;
-            } catch (e) {
-                return 1;
-            }
-        }
-
-        function cleanupLocalTab() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    let tabs = JSON.parse(raw);
-                    delete tabs[TAB_ID];
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(tabs));
-                }
-            } catch (e) {}
-        }
-
-        function calculateLiveCount() {
-            if (externalCountOverride !== null) {
-                return externalCountOverride;
-            }
-            const localTabs = getActiveLocalTabs();
-            if (isLocal) {
-                return localTabs;
-            }
-            // For live deployments (e.g. GitHub Pages): subtle organic baseline (3-7) + local tabs
-            const now = Date.now();
-            const cycle = Math.sin(now / 33000) * 1.8 + Math.cos(now / 77000) * 1.2;
-            const baseline = Math.max(3, Math.round(5 + cycle));
-            return baseline + (localTabs - 1);
-        }
-
-        function syncPresence() {
-            const count = calculateLiveCount();
-            updateDisplay(count);
-        }
-
-        // Heartbeat interval
-        syncPresence();
-        setInterval(syncPresence, 4000);
-
-        // BroadcastChannel for instant cross-tab sync if supported
-        if (typeof BroadcastChannel !== 'undefined') {
-            try {
-                presenceChannel = new BroadcastChannel(CHANNEL_NAME);
-                presenceChannel.onmessage = (event) => {
-                    if (event.data && event.data.type === 'ping') {
-                        syncPresence();
-                    }
-                };
-                presenceChannel.postMessage({ type: 'ping', tabId: TAB_ID });
-            } catch (e) {}
-        }
-
-        // Cleanup on tab close/unload
-        window.addEventListener('beforeunload', () => {
-            cleanupLocalTab();
-            if (presenceChannel) {
-                presenceChannel.postMessage({ type: 'ping', tabId: TAB_ID });
-                presenceChannel.close();
-            }
-        });
-        window.addEventListener('pagehide', () => {
-            cleanupLocalTab();
-        });
-
-        // Public API hook for custom backend (Firebase, WebSocket, etc.)
-        window.setPioneersOnlineCount = function (n) {
-            if (typeof n === 'number' && !isNaN(n)) {
-                externalCountOverride = Math.max(1, Math.round(n));
-                updateDisplay(externalCountOverride);
-            } else if (n === null) {
-                externalCountOverride = null;
-                syncPresence();
-            }
-        };
-    }
-
     // Initialize application
     tryRestoreCachedSave();
     setupSaveControls();
     setupModeNav();
     setupSearch();
     setupNextStepSearch();
-    setupPioneerPresence();
     loadData();
 
 })();
