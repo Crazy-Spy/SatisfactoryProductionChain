@@ -48,7 +48,7 @@
     </header>
 
     <main class="app-main">
-        <!-- Primary Mode Navigation: Automate Product (Full Chain) vs Next Step Explorer (Single Step) -->
+        <!-- Primary Mode Navigation: Automate Product vs Next Step Explorer vs Interactive Map -->
         <nav class="main-mode-nav" aria-label="Planner Modes">
             <button id="modeChainBtn" class="mode-nav-btn active" type="button">
                 <span class="mode-nav-icon">🎯</span>
@@ -62,6 +62,13 @@
                 <div class="mode-nav-info">
                     <span class="mode-nav-title">Next Step Explorer</span>
                     <span class="mode-nav-desc">What can I make with my surplus items?</span>
+                </div>
+            </button>
+            <button id="modeMapBtn" class="mode-nav-btn" type="button">
+                <span class="mode-nav-icon">🗺️</span>
+                <div class="mode-nav-info">
+                    <span class="mode-nav-title">Interactive Map</span>
+                    <span class="mode-nav-desc">Somersloops, Mercer Spheres, Slugs &amp; Hard Drives</span>
                 </div>
             </button>
         </nav>
@@ -450,6 +457,141 @@
                 <!-- Injected dynamically by app.js -->
             </div>
         </section>
+
+        <!-- Interactive Collectibles Map Workspace -->
+        <section id="interactiveMapWorkspace" class="interactive-map-workspace" style="display: none;">
+            <div class="map-header-banner">
+                <div class="map-banner-left">
+                    <span class="map-banner-badge">🗺️ WORLD COLLECTIBLES TRACKER</span>
+                    <h2 class="map-banner-heading">Interactive Collectibles Map: Mark Already Visited Locations</h2>
+                    <p class="map-banner-subheading">
+                        All <strong>106 Somersloops</strong>, <strong>298 Mercer Spheres</strong>, <strong>118 Crash Sites (Hard Drives)</strong>, and <strong>1,242 Power Slugs</strong> are in fixed world coordinates. Click any pin on the map or checklist to mark it as <em>Already Visited</em> — your progress saves automatically in your browser!
+                    </p>
+                </div>
+                <div class="map-banner-right">
+                    <div class="map-overall-progress-card">
+                        <div class="map-overall-top">
+                            <span class="map-overall-label">OVERALL WORLD PROGRESS</span>
+                            <span id="mapOverallProgressText" class="map-overall-val"><strong>0</strong> / 1764 Visited</span>
+                        </div>
+                        <div class="map-overall-bar-track">
+                            <div id="mapOverallProgressBar" class="map-overall-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="map-overall-foot">
+                            <span id="mapOverallShardsText">💎 <strong>0</strong> / 2659 Power Shards from Slugs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Layer Toggle Cards -->
+            <div class="map-categories-section">
+                <div class="map-categories-header">
+                    <span class="map-sec-label">CLICK ANY CATEGORY TO SHOW / HIDE ON MAP (OR CLICK "ONLY" TO ISOLATE):</span>
+                    <button type="button" id="mapShowAllCatsBtn" class="btn-map-action-sm">👁️ Show All Categories</button>
+                </div>
+                <div id="mapCategoryCards" class="map-category-cards-grid">
+                    <!-- Populated dynamically by js/interactive-map.js -->
+                </div>
+            </div>
+
+            <!-- Filter & Progress Actions Toolbar -->
+            <div class="map-controls-bar">
+                <div class="map-controls-left">
+                    <div class="filter-pills" id="mapVisitedFilterPills">
+                        <button class="filter-pill active" data-visited-filter="all" type="button">All Locations</button>
+                        <button class="filter-pill" data-visited-filter="unvisited" type="button">📍 Unvisited Only</button>
+                        <button class="filter-pill" data-visited-filter="visited" type="button">✅ Visited Only</button>
+                    </div>
+
+                    <select id="mapBiomeFilterSelect" class="map-filter-select" aria-label="Filter by Biome">
+                        <option value="all">All Biomes</option>
+                    </select>
+
+                    <select id="mapPodReqFilterSelect" class="map-filter-select" aria-label="Filter Crash Sites by Unlock Requirement" title="Filter Crash Sites (Hard Drives) by unlock requirement">
+                        <option value="all">Crash Sites: All Requirements</option>
+                        <option value="free">🔓 Free (No Requirements)</option>
+                        <option value="power">⚡ Requires Power (MW)</option>
+                        <option value="item">📦 Requires Parts</option>
+                    </select>
+
+                    <div class="map-search-box">
+                        <span>🔍</span>
+                        <input type="text" id="mapSearchInput" placeholder="Search biome, #ID, or unlock item (e.g. Motor)..." autocomplete="off">
+                        <button type="button" id="mapClearSearchBtn" class="map-clear-search" style="display: none;" title="Clear search">✕</button>
+                    </div>
+                </div>
+
+                <div class="map-controls-right">
+                    <button type="button" id="mapQuickMarkToggleBtn" class="btn-map-tool" title="When ON, single-clicking any pin on the map immediately marks/unmarks it as Visited!">
+                        ⚡ 1-Click Mark: <strong>OFF</strong>
+                    </button>
+                    <button type="button" id="mapExportVisitedBtn" class="btn-map-tool" title="Export your visited locations to a JSON backup file">
+                        📤 Export
+                    </button>
+                    <button type="button" id="mapImportVisitedBtn" class="btn-map-tool" title="Import visited locations from a JSON backup file">
+                        📥 Import
+                    </button>
+                    <input type="file" id="mapImportFileInput" accept=".json" style="display: none;">
+                    <button type="button" id="mapResetVisitedBtn" class="btn-map-tool danger" title="Clear all visited markers">
+                        🗑️ Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Map Canvas + Sidebar Checklist Grid -->
+            <div class="map-main-grid">
+                <!-- Left: Interactive World Map Viewport -->
+                <div class="map-viewport-card">
+                    <div id="mapCanvasWrapper" class="map-canvas-wrapper">
+                        <canvas id="collectiblesMapCanvas"></canvas>
+
+                        <!-- Top-Left HUD: Cursor Coordinates & Visible Count -->
+                        <div class="map-hud-top-left">
+                            <div id="mapCursorCoordsHud" class="map-coords-pill">X: 0m &bull; Y: 0m</div>
+                            <div id="mapVisiblePinsCountHud" class="map-visible-pill">Loading locations...</div>
+                        </div>
+
+                        <!-- Top-Right HUD: Zoom & Map Overlay Controls -->
+                        <div class="map-hud-top-right">
+                            <button type="button" id="mapBiomeLabelsToggleBtn" class="map-hud-btn active" title="Toggle Biome Labels">🏷️ Biomes</button>
+                            <button type="button" id="mapGridToggleBtn" class="map-hud-btn" title="Toggle Coordinate Grid">🌐 Grid</button>
+                            <button type="button" id="mapZoomInBtn" class="map-hud-btn icon-only" title="Zoom In">➕</button>
+                            <button type="button" id="mapZoomOutBtn" class="map-hud-btn icon-only" title="Zoom Out">➖</button>
+                            <button type="button" id="mapFitViewBtn" class="map-hud-btn" title="Fit Whole World">⛶ Fit</button>
+                        </div>
+
+                        <!-- Floating Hover Tooltip -->
+                        <div id="mapHoverTooltip" class="map-hover-tooltip" style="display: none;"></div>
+
+                        <!-- Floating Selected Pin Popup -->
+                        <div id="mapSelectedPopup" class="map-selected-popup" style="display: none;"></div>
+                    </div>
+                    <div class="map-footer-hint">
+                        <span>💡 <strong>Map Controls:</strong> Drag to pan &bull; Scroll wheel to zoom &bull; <strong>Click</strong> any pin to inspect &amp; mark visited &bull; <strong>Double-click</strong> (or <strong>Shift+Click</strong> / enable <strong>1-Click Mark</strong>) to toggle visited instantly!</span>
+                    </div>
+                </div>
+
+                <!-- Right: Selected Pin Inspector & Scrollable Location Checklist -->
+                <aside class="map-sidebar-card">
+                    <!-- Selected Pin Inspector -->
+                    <div id="mapSelectedInspectorCard" class="map-inspector-container">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Scrollable Checklist -->
+                    <div class="map-checklist-header">
+                        <div class="map-checklist-title-group">
+                            <span>📋 LOCATION CHECKLIST</span>
+                            <span id="mapChecklistCountBadge" class="map-checklist-badge">0 shown</span>
+                        </div>
+                    </div>
+                    <div id="mapChecklistContainer" class="map-checklist-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </aside>
+            </div>
+        </section>
     </main>
 
     <footer class="app-footer">
@@ -566,6 +708,7 @@
     <script src="js/save-parser.js"></script>
     <script src="js/production-tree.js"></script>
     <script src="js/factory-graph.js"></script>
+    <script src="js/interactive-map.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

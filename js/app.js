@@ -99,9 +99,11 @@
         // Mode Switch Navigation
         modeChainBtn: document.getElementById('modeChainBtn'),
         modeNextStepBtn: document.getElementById('modeNextStepBtn'),
+        modeMapBtn: document.getElementById('modeMapBtn'),
         chainSearchSection: document.getElementById('chainSearchSection'),
         // Next Step Explorer Workspace
         nextStepWorkspace: document.getElementById('nextStepWorkspace'),
+        interactiveMapWorkspace: document.getElementById('interactiveMapWorkspace'),
         nextStepItemInput: document.getElementById('nextStepItemInput'),
         clearNextStepSearchBtn: document.getElementById('clearNextStepSearchBtn'),
         dropdownNextStepToggleBtn: document.getElementById('dropdownNextStepToggleBtn'),
@@ -1743,15 +1745,17 @@
        ========================================================================== */
 
     /**
-     * Toggles between primary planner modes: 'chain' (Full Chain) vs 'next-step' (Downstream Explorer)
+     * Toggles between primary planner modes: 'chain' (Full Chain) vs 'next-step' (Downstream Explorer) vs 'map' (Interactive Map)
      */
     function switchMainMode(mode) {
         state.mainMode = mode;
         if (mode === 'chain') {
             elements.modeChainBtn?.classList.add('active');
             elements.modeNextStepBtn?.classList.remove('active');
+            elements.modeMapBtn?.classList.remove('active');
             if (elements.chainSearchSection) elements.chainSearchSection.style.display = '';
             if (elements.nextStepWorkspace) elements.nextStepWorkspace.style.display = 'none';
+            if (elements.interactiveMapWorkspace) elements.interactiveMapWorkspace.style.display = 'none';
 
             if (state.activeItem) {
                 if (elements.resultsWorkspace) elements.resultsWorkspace.style.display = '';
@@ -1763,9 +1767,11 @@
         } else if (mode === 'next-step') {
             elements.modeNextStepBtn?.classList.add('active');
             elements.modeChainBtn?.classList.remove('active');
+            elements.modeMapBtn?.classList.remove('active');
             if (elements.chainSearchSection) elements.chainSearchSection.style.display = 'none';
             if (elements.resultsWorkspace) elements.resultsWorkspace.style.display = 'none';
             if (elements.welcomeState) elements.welcomeState.style.display = 'none';
+            if (elements.interactiveMapWorkspace) elements.interactiveMapWorkspace.style.display = 'none';
             if (elements.nextStepWorkspace) elements.nextStepWorkspace.style.display = 'block';
 
             if (!state.nextStepItem && state.index) {
@@ -1773,6 +1779,19 @@
                 if (wireItem) selectNextStepItem(wireItem);
             } else {
                 renderNextStepWorkspace();
+            }
+        } else if (mode === 'map') {
+            elements.modeMapBtn?.classList.add('active');
+            elements.modeChainBtn?.classList.remove('active');
+            elements.modeNextStepBtn?.classList.remove('active');
+            if (elements.chainSearchSection) elements.chainSearchSection.style.display = 'none';
+            if (elements.resultsWorkspace) elements.resultsWorkspace.style.display = 'none';
+            if (elements.welcomeState) elements.welcomeState.style.display = 'none';
+            if (elements.nextStepWorkspace) elements.nextStepWorkspace.style.display = 'none';
+            if (elements.interactiveMapWorkspace) elements.interactiveMapWorkspace.style.display = 'flex';
+
+            if (typeof InteractiveMap !== 'undefined') {
+                InteractiveMap.init();
             }
         }
     }
@@ -2391,6 +2410,9 @@
         }
         if (elements.modeNextStepBtn) {
             elements.modeNextStepBtn.addEventListener('click', () => switchMainMode('next-step'));
+        }
+        if (elements.modeMapBtn) {
+            elements.modeMapBtn.addEventListener('click', () => switchMainMode('map'));
         }
     }
 
