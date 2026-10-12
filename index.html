@@ -43,6 +43,62 @@
                 <button id="saveHelpBtn" class="btn-save-help" title="Save file locations & Alternate Recipes guide" aria-label="Save Game Help">
                     <span class="btn-help-icon">ℹ️</span>
                 </button>
+
+                <!-- Quick Basic Calculator Trigger & Popover -->
+                <div class="header-calc-wrapper" id="headerCalcWrapper">
+                    <button id="quickCalcToggleBtn" class="btn-quick-calc" type="button" title="Open FICSIT Pocket Calculator" aria-label="Open Calculator" aria-expanded="false">
+                        <span class="btn-calc-icon">🧮</span>
+                        <span class="btn-calc-label">Calc</span>
+                    </button>
+
+                    <!-- Floating Basic Calculator Widget -->
+                    <div id="quickCalculatorPopover" class="quick-calc-popover" style="display: none;" role="dialog" aria-label="FICSIT Pocket Calculator">
+                        <div class="quick-calc-header" id="quickCalcDragHandle" title="Drag to move calculator anywhere on screen">
+                            <div class="quick-calc-title">
+                                <span>🧮</span>
+                                <span>FICSIT POCKET CALC</span>
+                            </div>
+                            <div class="quick-calc-header-actions">
+                                <button type="button" id="quickCalcCopyBtn" class="quick-calc-mini-btn" title="Copy result to clipboard">📋 Copy</button>
+                                <button type="button" id="quickCalcCloseBtn" class="quick-calc-close" title="Close calculator">&times;</button>
+                            </div>
+                        </div>
+
+                        <div class="quick-calc-screen">
+                            <div id="quickCalcExpression" class="quick-calc-expr">&nbsp;</div>
+                            <div id="quickCalcDisplay" class="quick-calc-display">0</div>
+                        </div>
+
+                        <div id="quickCalcHistory" class="quick-calc-history" style="display: none;"></div>
+
+                        <div class="quick-calc-keypad">
+                            <button type="button" class="calc-key fn-key" data-calc-action="clear" title="Clear All (C)">C</button>
+                            <button type="button" class="calc-key fn-key" data-calc-action="backspace" title="Backspace">⌫</button>
+                            <button type="button" class="calc-key fn-key" data-calc-action="percent" title="Percentage (%)">%</button>
+                            <button type="button" class="calc-key op-key" data-calc-op="/">÷</button>
+
+                            <button type="button" class="calc-key num-key" data-calc-num="7">7</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="8">8</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="9">9</button>
+                            <button type="button" class="calc-key op-key" data-calc-op="*">×</button>
+
+                            <button type="button" class="calc-key num-key" data-calc-num="4">4</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="5">5</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="6">6</button>
+                            <button type="button" class="calc-key op-key" data-calc-op="-">−</button>
+
+                            <button type="button" class="calc-key num-key" data-calc-num="1">1</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="2">2</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="3">3</button>
+                            <button type="button" class="calc-key op-key" data-calc-op="+">+</button>
+
+                            <button type="button" class="calc-key fn-key" data-calc-action="negate" title="Toggle Sign (±)">±</button>
+                            <button type="button" class="calc-key num-key" data-calc-num="0">0</button>
+                            <button type="button" class="calc-key num-key" data-calc-num=".">.</button>
+                            <button type="button" class="calc-key eq-key" data-calc-action="equals">=</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -441,6 +497,7 @@
                 <div class="next-step-filter-bar">
                     <div class="filter-pills" id="nextStepFilterPills">
                         <button class="filter-pill active" data-filter="all" type="button">All Options</button>
+                        <button class="filter-pill" data-filter="self-contained" type="button">✨ Self-Contained Only</button>
                         <button class="filter-pill" data-filter="standard" type="button">Standard Recipes</button>
                         <button class="filter-pill" data-filter="alternate" type="button">Alternate Recipes (ALTs)</button>
                     </div>

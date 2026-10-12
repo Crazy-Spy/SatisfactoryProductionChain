@@ -4427,3 +4427,404 @@ kbd {
     color: var(--text-muted);
     border-top: 1px dashed var(--border-color);
 }
+
+/* ==========================================================================
+   Next Step Explorer: Self-Contained Suggestions Emphasis
+   ========================================================================== */
+.ns-summary-self-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(16, 185, 129, 0.16);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.ns-summary-self-pill strong {
+    color: #34d399;
+    font-weight: 800;
+}
+
+.next-step-group-section {
+    margin-bottom: 1.75rem;
+}
+
+.next-step-group-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 1.15rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.next-step-group-header.self-contained {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(15, 23, 42, 0.9) 70%);
+    border-color: rgba(16, 185, 129, 0.45);
+    border-left: 4px solid #10b981;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+}
+
+.next-step-group-header.co-ingredients {
+    background: rgba(22, 30, 39, 0.75);
+    border-color: var(--border-color);
+    border-left: 4px solid #64748b;
+    margin-top: 0.5rem;
+}
+
+.ns-group-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.ns-group-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.16rem 0.55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.ns-group-badge.self-contained {
+    background: rgba(16, 185, 129, 0.22);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.ns-group-badge.co-ingredients {
+    background: rgba(100, 116, 139, 0.22);
+    color: #cbd5e1;
+    border: 1px solid rgba(100, 116, 139, 0.4);
+}
+
+.ns-group-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.ns-group-subtitle {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.ns-group-subtitle strong {
+    color: var(--text-primary);
+}
+
+.next-step-card.is-self-contained {
+    background: linear-gradient(155deg, rgba(16, 185, 129, 0.12) 0%, rgba(22, 33, 48, 0.92) 45%, rgba(15, 23, 42, 0.95) 100%);
+    border: 1.5px solid rgba(16, 185, 129, 0.5);
+    border-top: 3px solid #10b981;
+    box-shadow: 0 6px 22px rgba(16, 185, 129, 0.14), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.next-step-card.is-self-contained:hover {
+    border-color: #34d399;
+    box-shadow: 0 10px 28px rgba(16, 185, 129, 0.24), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.next-step-self-contained-ribbon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.24) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #34d399;
+}
+
+.next-step-self-contained-ribbon .ribbon-sub {
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #a7f3d0;
+    font-size: 0.72rem;
+}
+
+.ns-badge.self-contained {
+    background: rgba(16, 185, 129, 0.22);
+    border: 1px solid rgba(16, 185, 129, 0.55);
+    color: #34d399;
+    font-weight: 800;
+}
+
+.next-step-card.is-self-contained .co-pill.none {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+    font-weight: 700;
+    padding: 4px 10px;
+}
+
+/* ==========================================================================
+   Header Quick Basic Calculator (FICSIT Pocket Calc)
+   ========================================================================== */
+.header-calc-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-quick-calc {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg-surface-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-quick-calc:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--ficsit-orange);
+    transform: translateY(-1px);
+}
+
+.btn-quick-calc.active {
+    background: rgba(250, 149, 73, 0.2);
+    border-color: var(--ficsit-orange);
+    color: var(--ficsit-orange);
+    box-shadow: 0 0 12px var(--ficsit-orange-glow);
+}
+
+.btn-calc-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.quick-calc-popover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 268px;
+    background: linear-gradient(165deg, #1b2533 0%, #101720 100%);
+    border: 1.5px solid var(--ficsit-orange);
+    border-radius: 10px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), 0 0 16px rgba(250, 149, 73, 0.15);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+}
+
+.quick-calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.7rem;
+    background: rgba(250, 149, 73, 0.14);
+    border-bottom: 1px solid rgba(250, 149, 73, 0.3);
+    cursor: move;
+}
+
+.quick-calc-title {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: var(--ficsit-orange);
+}
+
+.quick-calc-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.quick-calc-mini-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    padding: 0.12rem 0.42rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.quick-calc-mini-btn:hover {
+    background: var(--ficsit-orange);
+    color: #000;
+    border-color: var(--ficsit-orange);
+}
+
+.quick-calc-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.quick-calc-close:hover {
+    color: #fff;
+}
+
+.quick-calc-screen {
+    background: #090d12;
+    margin: 0.65rem 0.65rem 0.45rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 7px;
+    border: 1px solid #263445;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.65);
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.quick-calc-expr {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    min-height: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-calc-display {
+    font-family: var(--font-mono);
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-calc-history {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 0.65rem 0.45rem;
+    padding: 0.3rem 0.45rem;
+    background: rgba(13, 17, 23, 0.6);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.calc-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.calc-history-item:hover {
+    background: rgba(250, 149, 73, 0.14);
+    color: var(--text-primary);
+}
+
+.calc-history-item .hist-res {
+    color: var(--ficsit-green);
+}
+
+.quick-calc-keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    padding: 0.2rem 0.65rem 0.7rem;
+}
+
+.calc-key {
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid #2b394a;
+    background: #1e2836;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.96rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.calc-key:hover {
+    background: #283648;
+    border-color: #475d78;
+}
+
+.calc-key:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.calc-key.fn-key {
+    background: #161f2b;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.calc-key.fn-key:hover {
+    background: #222f40;
+    color: #f8fafc;
+}
+
+.calc-key.op-key {
+    background: rgba(250, 149, 73, 0.15);
+    border-color: rgba(250, 149, 73, 0.4);
+    color: var(--ficsit-orange);
+    font-size: 1.1rem;
+}
+
+.calc-key.op-key:hover,
+.calc-key.op-key.active {
+    background: var(--ficsit-orange);
+    color: #000;
+    border-color: var(--ficsit-orange);
+}
+
+.calc-key.eq-key {
+    background: var(--ficsit-orange);
+    border-color: var(--ficsit-orange);
+    color: #000;
+    font-size: 1.15rem;
+    font-weight: 900;
+}
+
+.calc-key.eq-key:hover {
+    background: var(--ficsit-orange-hover);
+}

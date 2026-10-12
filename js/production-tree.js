@@ -730,12 +730,14 @@
 
             // Calculate Overclock presets and suggestions
             const smartPresets = calculateOverclockPresets(machinesNeeded100);
+            const isSelfContained = coIngredients.length === 0;
 
             results.push({
                 recipeId: recipe.id,
                 recipeName: recipe.name,
                 isAlternate,
                 isUnlocked,
+                isSelfContained,
                 buildingName,
                 buildingId,
                 buildingIcon,
@@ -751,8 +753,11 @@
             });
         }
 
-        // Sort: Standard recipes first, then alternates alphabetically by primary product
+        // Sort: 1. Self-contained recipes first, 2. Standard recipes before alternates, 3. Alphabetically by primary product
         results.sort((a, b) => {
+            if (a.isSelfContained !== b.isSelfContained) {
+                return a.isSelfContained ? -1 : 1;
+            }
             if (a.isAlternate !== b.isAlternate) {
                 return a.isAlternate ? 1 : -1;
             }

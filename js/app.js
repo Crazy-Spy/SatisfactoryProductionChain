@@ -2114,7 +2114,9 @@
         });
 
         // Apply recipe filter
-        if (state.nextStepFilter === 'standard') {
+        if (state.nextStepFilter === 'self-contained') {
+            options = options.filter(opt => !opt.coIngredients || opt.coIngredients.length === 0);
+        } else if (state.nextStepFilter === 'standard') {
             options = options.filter(opt => !opt.isAlternate);
         } else if (state.nextStepFilter === 'alternate') {
             options = options.filter(opt => opt.isAlternate);
@@ -2124,6 +2126,17 @@
         if (state.nextStepHideLocked && state.saveData) {
             options = options.filter(opt => !opt.isAlternate || opt.isUnlocked);
         }
+
+        // Ensure Self-Contained options always appear first in the list
+        options.sort((a, b) => {
+            const aSelf = !a.coIngredients || a.coIngredients.length === 0;
+            const bSelf = !b.coIngredients || b.coIngredients.length === 0;
+            if (aSelf !== bSelf) return aSelf ? -1 : 1;
+            if (a.isAlternate !== b.isAlternate) return a.isAlternate ? 1 : -1;
+            const nameA = a.products[0]?.name || a.recipeName;
+            const nameB = b.products[0]?.name || b.recipeName;
+            return nameA.localeCompare(nameB);
+        });
 
         // Handle empty options
         if (options.length === 0) {
@@ -2139,6 +2152,9 @@
             return;
         }
 
+        const selfContainedOptions = options.filter(opt => !opt.coIngredients || opt.coIngredients.length === 0);
+        const coIngredientOptions = options.filter(opt => opt.coIngredients && opt.coIngredients.length > 0);
+
         // Summary Banner
         const itemIcon = inputItem.icon || `images/items/${inputItem.id}.png`;
         let bannerHtml = `
@@ -2149,16 +2165,16 @@
                         Supplying <strong>${formatNumber(rate)} ${rateUnit}</strong> of <strong>${escapeHtml(inputItem.name)}</strong>
                     </div>
                 </div>
-                <div style="font-size: 0.85rem; color: #94a3b8;">
-                    Found <strong style="color: #f59e0b;">${options.length}</strong> downstream crafting path${options.length > 1 ? 's' : ''}
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 0.85rem; color: #94a3b8;">
+                    ${selfContainedOptions.length > 0 ? `<span class="ns-summary-self-pill">✨ <strong>${selfContainedOptions.length}</strong> Self-Contained (No Extra Inputs)</span>` : ''}
+                    <span>Found <strong style="color: #f59e0b;">${options.length}</strong> downstream crafting path${options.length > 1 ? 's' : ''}</span>
                 </div>
             </div>
         `;
 
-        // Render Cards Grid
-        let gridHtml = '<div class="next-step-cards-grid">';
-
-        for (const opt of options) {
+        // Helper to build a single Next Step option card
+        function buildNextStepCardHtml(opt) {
+            const isSelfContained = !opt.coIngredients || opt.coIngredients.length === 0;
             const primaryProd = opt.products[0] || { name: opt.recipeName, icon: '', totalOutputRate: 0, unit: 'parts/min' };
             const prodIcon = primaryProd.icon || (primaryProd.id ? `images/items/${primaryProd.id}.png` : '');
 
@@ -2189,8 +2205,8 @@
 
             // Co-ingredients HTML
             let coIngredientsHtml = '';
-            if (!opt.coIngredients || opt.coIngredients.length === 0) {
-                coIngredientsHtml = `<div class="co-pill none">✓ None (Self-contained)</div>`;
+            if (isSelfContained) {
+                coIngredientsHtml = `<div class="co-pill none">✨ None — 100% Self-Contained (Only requires ${escapeHtml(inputItem.name)}!)</div>`;
             } else {
                 coIngredientsHtml = `<div class="co-ingredients-list">` + opt.coIngredients.map(co => {
                     const coPerMach = formatNumber(co.requiredPerMachine100 * (currentClock / 100));
@@ -2226,8 +2242,14 @@
             const isBaseActive = Math.abs(currentClock - 100) < 0.2;
             presetsHtml += `<button type="button" class="oc-preset-btn ${isBaseActive ? 'active' : ''}" data-speed="100" data-recipe-id="${opt.recipeId}">100% Base</button>`;
 
-            const cardHtml = `
-                <div class="next-step-card ${opt.isAlternate ? 'is-alt' : ''}" data-recipe-id="${opt.recipeId}" data-machines-100="${opt.machinesNeeded100}" data-building-name="${escapeHtml(opt.buildingName)}">
+            return `
+                <div class="next-step-card ${isSelfContained ? 'is-self-contained' : ''} ${opt.isAlternate ? 'is-alt' : ''}" data-recipe-id="${opt.recipeId}" data-machines-100="${opt.machinesNeeded100}" data-building-name="${escapeHtml(opt.buildingName)}">
+                    ${isSelfContained ? `
+                    <div class="next-step-self-contained-ribbon">
+                        <span>✨ SELF-CONTAINED SUGGESTION</span>
+                        <span class="ribbon-sub">Ready to build with ONLY ${escapeHtml(inputItem.name)}</span>
+                    </div>
+                    ` : ''}
                     <!-- Header -->
                     <div class="next-step-card-header">
                         <div class="next-step-product-info">
@@ -2238,7 +2260,10 @@
                             </div>
                         </div>
                         <div class="next-step-header-badges">
-                            <span class="ns-badge ${badgeClass}">${badgeText}</span>
+                            <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; justify-content: flex-end;">
+                                ${isSelfContained ? `<span class="ns-badge self-contained">✨ SELF-CONTAINED</span>` : ''}
+                                <span class="ns-badge ${badgeClass}">${badgeText}</span>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 4px; font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">
                                 ${opt.buildingIcon ? `<img src="${opt.buildingIcon}" alt="" style="width: 15px; height: 15px; object-fit: contain;" onerror="this.style.display='none'">` : ''}
                                 <span>${escapeHtml(opt.buildingName)}</span>
@@ -2290,12 +2315,58 @@
                     </div>
                 </div>
             `;
-            gridHtml += cardHtml;
         }
 
-        gridHtml += '</div>';
+        // Render Featured Self-Contained Section first, followed by Co-Ingredient Section
+        let resultsHtml = '';
 
-        elements.nextStepResultsContainer.innerHTML = bannerHtml + gridHtml;
+        if (selfContainedOptions.length > 0) {
+            resultsHtml += `
+                <div class="next-step-group-section self-contained-group">
+                    <div class="next-step-group-header self-contained">
+                        <div class="ns-group-title-wrap">
+                            <span class="ns-group-badge self-contained">✨ TOP PRIORITY</span>
+                            <h3 class="ns-group-title">Self-Contained Suggestions (${selfContainedOptions.length})</h3>
+                        </div>
+                        <p class="ns-group-subtitle">
+                            These products can be crafted <strong>immediately</strong> using <strong>100% ${escapeHtml(inputItem.name)}</strong> with zero additional ingredients required.
+                        </p>
+                    </div>
+                    <div class="next-step-cards-grid">
+                        ${selfContainedOptions.map(buildNextStepCardHtml).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        if (coIngredientOptions.length > 0) {
+            if (selfContainedOptions.length > 0) {
+                resultsHtml += `
+                    <div class="next-step-group-section co-ingredient-group">
+                        <div class="next-step-group-header co-ingredients">
+                            <div class="ns-group-title-wrap">
+                                <span class="ns-group-badge co-ingredients">🔗 MULTI-INPUT</span>
+                                <h3 class="ns-group-title">Requires Additional Co-Ingredients (${coIngredientOptions.length})</h3>
+                            </div>
+                            <p class="ns-group-subtitle">
+                                These downstream recipes combine your <strong>${escapeHtml(inputItem.name)}</strong> supply with one or more extra ingredients.
+                            </p>
+                        </div>
+                        <div class="next-step-cards-grid">
+                            ${coIngredientOptions.map(buildNextStepCardHtml).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultsHtml += `
+                    <div class="next-step-cards-grid">
+                        ${coIngredientOptions.map(buildNextStepCardHtml).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        elements.nextStepResultsContainer.innerHTML = bannerHtml + resultsHtml;
 
         // Attach listeners for interactive sliders & presets
         attachNextStepCardEvents();
@@ -2448,9 +2519,340 @@
         return state.recycleClosedLoop;
     };
 
+    /**
+     * Sets up the Header Quick Basic Calculator (FICSIT Pocket Calc)
+     */
+    function setupQuickCalculator() {
+        const toggleBtn = document.getElementById('quickCalcToggleBtn');
+        const popover = document.getElementById('quickCalculatorPopover');
+        const closeBtn = document.getElementById('quickCalcCloseBtn');
+        const copyBtn = document.getElementById('quickCalcCopyBtn');
+        const exprEl = document.getElementById('quickCalcExpression');
+        const displayEl = document.getElementById('quickCalcDisplay');
+        const historyEl = document.getElementById('quickCalcHistory');
+        const dragHandle = document.getElementById('quickCalcDragHandle');
+
+        if (!toggleBtn || !popover || !displayEl) return;
+
+        let currentInput = '0';
+        let previousValue = null;
+        let operator = null;
+        let waitingForSecondOperand = false;
+        let expressionText = '';
+        const historyList = [];
+
+        function formatCalcNumber(num) {
+            if (!isFinite(num)) return 'Error';
+            // Avoid floating point precision noise (e.g. 0.1 + 0.2 = 0.3)
+            const rounded = Math.round((num + Number.EPSILON) * 1e6) / 1e6;
+            return String(rounded);
+        }
+
+        function opSymbol(op) {
+            if (op === '/') return '÷';
+            if (op === '*') return '×';
+            if (op === '-') return '−';
+            if (op === '+') return '+';
+            return op || '';
+        }
+
+        function updateScreen() {
+            displayEl.textContent = currentInput;
+            exprEl.innerHTML = expressionText ? escapeHtml(expressionText) : '&nbsp;';
+            // Highlight active operator key
+            popover.querySelectorAll('.calc-key.op-key').forEach(btn => {
+                const btnOp = btn.getAttribute('data-calc-op');
+                btn.classList.toggle('active', waitingForSecondOperand && operator === btnOp);
+            });
+        }
+
+        function renderHistory() {
+            if (!historyEl) return;
+            if (historyList.length === 0) {
+                historyEl.style.display = 'none';
+                historyEl.innerHTML = '';
+                return;
+            }
+            historyEl.style.display = 'flex';
+            historyEl.innerHTML = historyList.slice(-3).map(entry => `
+                <button type="button" class="calc-history-item" data-val="${escapeHtml(entry.result)}" title="Click to reuse ${escapeHtml(entry.result)}">
+                    <span class="hist-expr">${escapeHtml(entry.expr)} =</span>
+                    <strong class="hist-res">${escapeHtml(entry.result)}</strong>
+                </button>
+            `).join('');
+
+            historyEl.querySelectorAll('.calc-history-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.getAttribute('data-val');
+                    if (val && val !== 'Error') {
+                        currentInput = val;
+                        waitingForSecondOperand = false;
+                        updateScreen();
+                    }
+                });
+            });
+        }
+
+        function inputDigit(digit) {
+            if (currentInput === 'Error') {
+                currentInput = '0';
+            }
+            if (digit === '.') {
+                if (waitingForSecondOperand) {
+                    currentInput = '0.';
+                    waitingForSecondOperand = false;
+                    updateScreen();
+                    return;
+                }
+                if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+                updateScreen();
+                return;
+            }
+
+            if (waitingForSecondOperand) {
+                currentInput = digit;
+                waitingForSecondOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? digit : (currentInput.length < 14 ? currentInput + digit : currentInput);
+            }
+            updateScreen();
+        }
+
+        function compute(first, second, op) {
+            if (op === '+') return first + second;
+            if (op === '-') return first - second;
+            if (op === '*') return first * second;
+            if (op === '/') return second === 0 ? NaN : first / second;
+            return second;
+        }
+
+        function handleOperator(nextOp) {
+            if (currentInput === 'Error') {
+                clearAll();
+            }
+            const inputValue = parseFloat(currentInput);
+
+            if (operator && waitingForSecondOperand) {
+                operator = nextOp;
+                expressionText = `${formatCalcNumber(previousValue)} ${opSymbol(operator)}`;
+                updateScreen();
+                return;
+            }
+
+            if (previousValue === null) {
+                previousValue = inputValue;
+            } else if (operator) {
+                const result = compute(previousValue, inputValue, operator);
+                const formatted = formatCalcNumber(result);
+                if (formatted === 'Error') {
+                    currentInput = 'Error';
+                    previousValue = null;
+                    operator = null;
+                    waitingForSecondOperand = false;
+                    expressionText = '';
+                    updateScreen();
+                    return;
+                }
+                historyList.push({
+                    expr: `${formatCalcNumber(previousValue)} ${opSymbol(operator)} ${formatCalcNumber(inputValue)}`,
+                    result: formatted
+                });
+                renderHistory();
+                currentInput = formatted;
+                previousValue = parseFloat(formatted);
+            }
+
+            waitingForSecondOperand = true;
+            operator = nextOp;
+            expressionText = `${formatCalcNumber(previousValue)} ${opSymbol(operator)}`;
+            updateScreen();
+        }
+
+        function handleEquals() {
+            if (operator === null || previousValue === null) return;
+            const inputValue = parseFloat(currentInput);
+            const expr = `${formatCalcNumber(previousValue)} ${opSymbol(operator)} ${formatCalcNumber(inputValue)}`;
+            const result = compute(previousValue, inputValue, operator);
+            const formatted = formatCalcNumber(result);
+
+            if (formatted !== 'Error') {
+                historyList.push({ expr, result: formatted });
+                renderHistory();
+            }
+
+            expressionText = `${expr} =`;
+            currentInput = formatted;
+            previousValue = null;
+            operator = null;
+            waitingForSecondOperand = true;
+            updateScreen();
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            previousValue = null;
+            operator = null;
+            waitingForSecondOperand = false;
+            expressionText = '';
+            updateScreen();
+        }
+
+        function backspace() {
+            if (waitingForSecondOperand || currentInput === 'Error') {
+                currentInput = '0';
+                waitingForSecondOperand = false;
+                updateScreen();
+                return;
+            }
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+                if (currentInput === '-' || currentInput === '-0') currentInput = '0';
+            } else {
+                currentInput = '0';
+            }
+            updateScreen();
+        }
+
+        function handlePercent() {
+            const val = parseFloat(currentInput);
+            if (isNaN(val)) return;
+            const res = (previousValue !== null && (operator === '+' || operator === '-'))
+                ? previousValue * (val / 100)
+                : val / 100;
+            currentInput = formatCalcNumber(res);
+            waitingForSecondOperand = false;
+            updateScreen();
+        }
+
+        function handleNegate() {
+            if (currentInput === '0' || currentInput === 'Error') return;
+            currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
+            updateScreen();
+        }
+
+        // Bind keypad buttons
+        popover.querySelectorAll('[data-calc-num]').forEach(btn => {
+            btn.addEventListener('click', () => inputDigit(btn.getAttribute('data-calc-num')));
+        });
+
+        popover.querySelectorAll('[data-calc-op]').forEach(btn => {
+            btn.addEventListener('click', () => handleOperator(btn.getAttribute('data-calc-op')));
+        });
+
+        popover.querySelectorAll('[data-calc-action]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-calc-action');
+                if (action === 'clear') clearAll();
+                else if (action === 'backspace') backspace();
+                else if (action === 'percent') handlePercent();
+                else if (action === 'negate') handleNegate();
+                else if (action === 'equals') handleEquals();
+            });
+        });
+
+        // Open / Close toggle
+        function setCalcOpen(open) {
+            popover.style.display = open ? 'flex' : 'none';
+            toggleBtn.classList.toggle('active', open);
+            toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = popover.style.display !== 'none';
+            setCalcOpen(!isOpen);
+        });
+
+        closeBtn?.addEventListener('click', () => setCalcOpen(false));
+
+        // Copy button
+        copyBtn?.addEventListener('click', () => {
+            if (currentInput && currentInput !== 'Error') {
+                navigator.clipboard?.writeText(currentInput);
+                const prevText = copyBtn.textContent;
+                copyBtn.textContent = '✓ Copied!';
+                setTimeout(() => { copyBtn.textContent = prevText; }, 1200);
+            }
+        });
+
+        // Draggable Floating Calculator Window
+        if (dragHandle) {
+            let isDraggingCalc = false;
+            let startX = 0;
+            let startY = 0;
+            let initialLeft = 0;
+            let initialTop = 0;
+
+            dragHandle.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button')) return;
+                isDraggingCalc = true;
+                const rect = popover.getBoundingClientRect();
+                popover.style.position = 'fixed';
+                popover.style.right = 'auto';
+                popover.style.left = `${rect.left}px`;
+                popover.style.top = `${rect.top}px`;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = rect.left;
+                initialTop = rect.top;
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingCalc) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                const nextLeft = Math.max(8, Math.min(window.innerWidth - 260, initialLeft + dx));
+                const nextTop = Math.max(8, Math.min(window.innerHeight - 100, initialTop + dy));
+                popover.style.left = `${nextLeft}px`;
+                popover.style.top = `${nextTop}px`;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDraggingCalc = false;
+            });
+        }
+
+        // Keyboard support when calculator is open and user isn't typing in an input
+        window.addEventListener('keydown', (e) => {
+            if (popover.style.display === 'none') return;
+            const activeTag = document.activeElement?.tagName;
+            if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                e.preventDefault();
+                inputDigit(e.key);
+            } else if (e.key === '.' || e.key === ',') {
+                e.preventDefault();
+                inputDigit('.');
+            } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                e.preventDefault();
+                handleOperator(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                handleEquals();
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                setCalcOpen(false);
+            } else if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                clearAll();
+            } else if (e.key === '%') {
+                e.preventDefault();
+                handlePercent();
+            }
+        });
+    }
+
     // Initialize application
     tryRestoreCachedSave();
     setupSaveControls();
+    setupQuickCalculator();
     setupModeNav();
     setupSearch();
     setupNextStepSearch();
